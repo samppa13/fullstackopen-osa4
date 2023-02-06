@@ -6,6 +6,15 @@ const dummy = (blogs) => {
     return number
 }
 
+const totalLikes = (blogs) => {
+    let total = 0
+    for (let index = 0; index < blogs.length; index++) {
+        total += blogs[index].likes
+    }
+    return total
+}
+
 module.exports = {
-    dummy
+    dummy,
+    totalLikes
 }
