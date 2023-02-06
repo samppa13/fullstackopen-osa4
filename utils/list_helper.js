@@ -14,7 +14,24 @@ const totalLikes = (blogs) => {
     return total
 }
 
+const favoriteBlog = (blogs) => {
+    let favoriteIndex = 0
+    if (blogs.length === 0) {
+        return {}
+    }
+    for (let index = 0; index < blogs.length; index++) {
+        if (index === 0) {
+            favoriteIndex = index
+        }
+        else if (blogs[index].likes > blogs[favoriteIndex].likes) {
+            favoriteIndex = index
+        }
+    }
+    return blogs[favoriteIndex]
+}
+
 module.exports = {
     dummy,
-    totalLikes
+    totalLikes,
+    favoriteBlog
 }
