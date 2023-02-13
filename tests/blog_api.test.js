@@ -52,6 +52,24 @@ describe('addition of a new blog', () => {
             'Best Saves'
         )
     })
+
+    test('if the likes property is missing from the request, it will default to the value 0', async () => {
+        const newBlog = {
+            _id: '7d424ed91374dab8536a31b1',
+            title: 'Best Saves',
+            author: 'Veini Vehviläinen',
+            url: 'http://www.goalie.com/hockey/bestsaves',
+            __v: 0
+        }
+        await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
+        const blogsAtEnd = await helper.blogsInDb()
+        const list_likes = blogsAtEnd.map(b => b.likes)
+        expect(list_likes).toContain(0)
+    })
 })
 
 afterAll(async () => {
