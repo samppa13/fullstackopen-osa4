@@ -70,6 +70,38 @@ describe('addition of a new blog', () => {
         const list_likes = blogsAtEnd.map(b => b.likes)
         expect(list_likes).toContain(0)
     })
+
+    test('blog without title is not added', async () => {
+        const newBlog = {
+            _id: '7d424ed91374dab8536a31b1',
+            author: 'Veini Vehviläinen',
+            url: 'http://www.goalie.com/hockey/bestsaves',
+            likes: 19,
+            __v: 0
+        }
+        await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(400)
+        const blogsAtEnd = await helper.blogsInDb()
+        expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+    })
+
+    test('blog without url is not added', async () => {
+        const newBlog = {
+            _id: '7d424ed91374dab8536a31b1',
+            title: 'Best Saves',
+            author: 'Veini Vehviläinen',
+            likes: 19,
+            __v: 0
+        }
+        await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(400)
+        const blogsAtEnd = await helper.blogsInDb()
+        expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+    })
 })
 
 afterAll(async () => {
