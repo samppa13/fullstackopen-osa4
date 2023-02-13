@@ -1,65 +1,57 @@
 const mongoose = require('mongoose')
 const supertest = require('supertest')
+const helper = require('./testHelper')
 const app = require('../app')
 const api = supertest(app)
 const Blog = require('../models/blog')
 
-const blogs = [
-    {
-        _id: '7d644dd93e76d898456a39b1',
-        title: 'Hockey goalie',
-        author: 'Frans Tuohimaa',
-        url: 'http://www.blogspot.com/hockeyGoalie',
-        likes: 9,
-        __v: 0
-    },
-    {
-        _id: '8c544fd42e766493426f32c6',
-        title: 'Hockey goalie goals',
-        author: 'Pekka Rinne',
-        url: 'http://www.wordpress.com/hockey/goalie/goals',
-        likes: 15,
-        __v: 0
-    },
-    {
-        _id: '75643d243e76a823446f3921',
-        title: 'Goalie',
-        author: 'Juuse Saros',
-        url: 'http://www.blogspot.com/goalie/pro',
-        likes: 10,
-        __v: 0
-    },
-    {
-        _id: '556a4ed23576d8a8446439cd',
-        title: 'Goalie history',
-        author: 'Jarmo Myllys',
-        url: 'http://www.history.com/blogs/goalie',
-        likes: 4,
-        __v: 0
-    }
-]
+describe('when there is initially some blogs saved', () => {
+    beforeEach(async () => {
+        await Blog.deleteMany({})
+        await Blog.insertMany(helper.initialBlogs)
+    })
 
-beforeEach(async () => {
-    await Blog.deleteMany({})
-    await Blog.insertMany(blogs)
+    test('blogs are returned as json', async () => {
+        await api
+            .get('/api/blogs')
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+    })
+
+    test('all blogs are returned', async () => {
+        const response = await api.get('/api/blogs')
+        expect(response.body).toHaveLength(helper.initialBlogs.length)
+    })
+
+    test('the unique identifier property of the blogs posts is named id', async () => {
+        const response = await api.get('/api/blogs')
+        const id = response.body.map(r => r.id)
+        expect(id).toBeDefined()
+    })
 })
 
-test('blogs are returned as json', async () => {
-    await api
-        .get('/api/blogs')
-        .expect(200)
-        .expect('Content-Type', /application\/json/)
-})
-
-test('all blogs are returned', async () => {
-    const response = await api.get('/api/blogs')
-    expect(response.body).toHaveLength(blogs.length)
-})
-
-test('the unique identifier property of the blogs posts is named id', async () => {
-    const response = await api.get('/api/blogs')
-    const id = response.body.map(r => r.id)
-    expect(id).toBeDefined()
+describe('addition of a new blog', () => {
+    test('a valid blog can be added', async () => {
+        const newBlog = {
+            _id: '7d424ed91374dab8536a31b1',
+            title: 'Best Saves',
+            author: 'Veini Vehviläinen',
+            url: 'http://www.goalie.com/hockey/bestsaves',
+            likes: 9,
+            __v: 0
+        }
+        await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
+        const blogsAtEnd = await helper.blogsInDb()
+        expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1)
+        const titles = blogsAtEnd.map(b => b.title)
+        expect(titles).toContain(
+            'Best Saves'
+        )
+    })
 })
 
 afterAll(async () => {
