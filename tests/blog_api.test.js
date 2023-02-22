@@ -127,6 +127,57 @@ describe('deletion of a blog', () => {
     })
 })
 
+describe('updating a specific blog', () => {
+    test('succeeds with valid data', async () => {
+        const updateBlog = {
+            _id: '556a4ed23576d8a8446439cd',
+            title: 'Goalie history',
+            author: 'Jarmo Myllys',
+            url: 'http://www.history.com/blogs/goalie',
+            likes: 7,
+            __v: 0
+        }
+        await api
+            .put(`/api/blogs/${updateBlog._id}`)
+            .send(updateBlog)
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+        const blogsAtEnd = await helper.blogsInDb()
+        const blogAtEnd = blogsAtEnd.find(blog => blog.title === updateBlog.title)
+        expect(blogAtEnd.likes).toBe(updateBlog.likes)
+    })
+
+    test('if likes are increased by one', async () => {
+        const blogsAtStart = await helper.blogsInDb()
+        const updateBlog = { ...blogsAtStart[0], likes: blogsAtStart[0].likes + 1 }
+        await api
+            .put(`/api/blogs/${updateBlog.id}`)
+            .send(updateBlog)
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+        const blogsAtEnd = await helper.blogsInDb()
+        const blogAtEnd = blogsAtEnd[0]
+        expect(blogAtEnd.likes).toBe(
+            blogsAtStart[0].likes + 1
+        )
+    })
+
+    test('fails with statuscode 400 id is invalid', async () => {
+        const updateBlog = {
+            _id: '421434',
+            title: 'Goalie history',
+            author: 'Jarmo Myllys',
+            url: 'http://www.history.com/blogs/goalie',
+            likes: 7,
+            __v: 0
+        }
+        await api
+            .put(`/api/blogs/${updateBlog._id}`)
+            .send(updateBlog)
+            .expect(400)
+    })
+})
+
 afterAll(async () => {
     await mongoose.connection.close()
 })
