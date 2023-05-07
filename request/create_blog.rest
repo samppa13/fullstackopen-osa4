@@ -2,8 +2,9 @@ POST http://localhost:3003/api/blogs
 Content-Type: application/json
 
 {
-    "title": "Goalie",
+    "title": "Goalie Goal",
     "author": "Juuse Saros",
-    "url": "http://www.blogspot.com/goalie/pro",
-    "likes": 10
+    "url": "http://www.blogspot.com/goalie/goal",
+    "likes": 10,
+    "userId": "64578fe775ff4743a489d937"
 }
