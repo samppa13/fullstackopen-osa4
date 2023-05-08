@@ -1,10 +1,11 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imp1c2EiLCJpZCI6IjY0NTc4ZmU3NzVmZjQ3NDNhNDg5ZDkzNyIsImlhdCI6MTY4MzU0MDMxNX0.RCN0rmS_jhigGLUD4f4lvk1-zDyCZp7-MYZ_lZFR_pQ
 
 {
-    "title": "Goalie Goal",
+    "title": "Goalie",
     "author": "Juuse Saros",
-    "url": "http://www.blogspot.com/goalie/goal",
+    "url": "http://www.blogspot.com/goalie",
     "likes": 10,
     "userId": "64578fe775ff4743a489d937"
 }
